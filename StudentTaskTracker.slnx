@@ -1,0 +1,5 @@
+<Solution>
+  <Project Path="RedisBackgroundService/RedisBackgroundService.csproj" Id="e1143bb7-7c56-4393-a642-99758064c5d5" />
+  <Project Path="StudentTaskTracker/UserService.csproj" />
+  <Project Path="TaskService/TaskService.csproj" Id="cf09bf46-6ec6-4f36-b21f-a3097195d6e7" />
+</Solution>
