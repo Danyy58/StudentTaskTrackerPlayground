@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Confluent.Kafka;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
@@ -54,13 +55,36 @@ namespace UserService.Services
             if (user is null)
                 return null;
 
-            await repos.DeleteUser(user);
+            await Task.WhenAll(repos.DeleteUser(user), ProduceMsg(userId));
             return user;
         }
 
         public async Task<TokenDTO?> RefreshTokensAsync(RefreshTokenRequestDTO request)
         {
             return await tokenService.RefreshTokensAsync(request);
+        }
+
+        public async Task RemoveRefreshTokenAsync(int userId)
+        {
+            await repos.RemoveRefreshTokenAsync(userId);
+        }
+
+        private async Task ProduceMsg(int userId)
+        {
+            var message = new Message<int, int>()
+            {
+                Key = userId,
+                Value = userId
+            };
+
+            var producerConfig = new ProducerConfig()
+            {
+                BootstrapServers = "localhost:9092",
+                Acks = Acks.All
+            };
+
+            using var producer = new ProducerBuilder<int, int>(producerConfig).Build();
+            await producer.ProduceAsync("user-deleted", message);
         }
     }
 }

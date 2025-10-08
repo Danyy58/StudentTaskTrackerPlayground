@@ -7,5 +7,6 @@
         public Task<Models.Task?> GetTask(int taskId, int authorId);
         public Task Save(Models.Task result);
         public Task Delete(Models.Task result);
+        public Task DeleteUserTasksAsync(int userId);
     }
 }

@@ -10,15 +10,17 @@ namespace UserService.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class UserController(IUserService service) : ControllerBase
+    public class UserController(IUserService _service) : ControllerBase
     {
+        private readonly IUserService _service = _service;
+
         [HttpPost("register")]
         public async Task<ActionResult<User>> RegisterUser(RegistrationRequest request)
         {
             if (request is null)
                 return BadRequest();
 
-            var result = await service.RegisterUserAsync(request);
+            var result = await _service.RegisterUserAsync(request);
 
             if (result is null)
                 return BadRequest();
@@ -32,7 +34,7 @@ namespace UserService.Controllers
             if (request is null)
                 return BadRequest();
 
-            var token = await service.LoginAsync(request);
+            var token = await _service.LoginAsync(request);
             if (token is null)
                 return BadRequest();
 
@@ -40,9 +42,8 @@ namespace UserService.Controllers
             return Ok("Logged in");
         }
 
-        [Authorize]
         [HttpPost("logout")]
-        public IActionResult Logout()
+        public async Task<IActionResult> Logout()
         {
             HttpContext.Response.Cookies.Delete("user-cookie", new CookieOptions
             {
@@ -52,15 +53,17 @@ namespace UserService.Controllers
                 SameSite = SameSiteMode.Strict
             });
 
+            var userId = GetUser();
+            await _service.RemoveRefreshTokenAsync(userId);
+
             return Ok("Logged Out");
         }
 
-        [Authorize]
         [HttpDelete]
         public async Task<IActionResult> DeleteUser()
         {
-            var userId = Convert.ToInt32(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
-            var result = await service.DeleteAsync(userId);
+            var userId = GetUser();
+            var result = await _service.DeleteAsync(userId);
             if (result is null)
                 return BadRequest();
 
@@ -70,13 +73,18 @@ namespace UserService.Controllers
         [HttpPost("refresh-token")]
         public async Task<IActionResult> RefreshToken(RefreshTokenRequestDTO request)
         {
-            var result = await service.RefreshTokensAsync(request);
+            var result = await _service.RefreshTokensAsync(request);
             if (result is null
                 || result.AccessToken is null
                 || result.RefreshToken is null)
                 return Unauthorized();
 
             return Ok();
+        }
+
+        private int GetUser()
+        {
+            return Convert.ToInt32(HttpContext.Request.Headers["X-User-Id"].FirstOrDefault());
         }
     }
 }

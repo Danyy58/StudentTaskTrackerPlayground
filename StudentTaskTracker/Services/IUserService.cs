@@ -9,5 +9,6 @@ namespace UserService.Services
         public Task<TokenDTO?> LoginAsync(LoginRequest request);
         public Task<User?> DeleteAsync(int userId);
         public Task<TokenDTO?> RefreshTokensAsync(RefreshTokenRequestDTO request);
+        public Task RemoveRefreshTokenAsync(int userId); 
     }
 }

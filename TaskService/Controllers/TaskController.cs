@@ -11,7 +11,6 @@ namespace TaskService.Controllers
     [ApiController]
     public class TaskController(ITaskServices service) : ControllerBase
     {
-        [Authorize]
         [HttpPost]
         public async Task<ActionResult<Models.Task?>> CreateTask(TaskRequest request)
         {
@@ -24,7 +23,6 @@ namespace TaskService.Controllers
             return result is null ? BadRequest("Ошибка при создании задания") : Ok(result);
         }
 
-        [Authorize]
         [HttpGet]
         public async Task<ActionResult<List<TaskResponse>>> GetAllTasks()
         {
@@ -34,7 +32,6 @@ namespace TaskService.Controllers
             return tasks.Count == 0 ? NotFound("Задания не найдены") : Ok(tasks);
         }
 
-        [Authorize]
         [HttpPut("taskId")]
         public async Task<ActionResult<Models.Task?>> EditTask(int taskId, TaskRequest request)
         {
@@ -48,7 +45,6 @@ namespace TaskService.Controllers
             return result is null ? NotFound("Редактируемое задание не найдено") : Ok(result);
         }
 
-        [Authorize]
         [HttpDelete("taskId")]
         public async Task<IActionResult> DeleteTask(int taskId)
         {
@@ -60,7 +56,7 @@ namespace TaskService.Controllers
 
         private int GetUser()
         {
-            return Convert.ToInt32(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+            return Convert.ToInt32(HttpContext.Request.Headers["X-User-Id"].FirstOrDefault());
         }
     }
 }

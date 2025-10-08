@@ -34,7 +34,7 @@ namespace UserService.Services.Token
         {
             var claims = new List<Claim>
             {
-                new Claim(ClaimTypes.NameIdentifier, user.ID.ToString()),
+                new Claim(JwtRegisteredClaimNames.Sub, user.ID.ToString()),
                 new Claim(ClaimTypes.Name, user.Name)
             };
 

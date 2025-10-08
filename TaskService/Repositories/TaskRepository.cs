@@ -59,5 +59,12 @@ namespace TaskService.Repositories
             context.Task.Remove(result);
             await context.SaveChangesAsync();
         }
+
+        public async Task DeleteUserTasksAsync(int userId)
+        {
+            var tasks = await context.Task.Where(t => t.AuthorID == userId).ToListAsync();
+            context.Task.RemoveRange(tasks);
+            await context.SaveChangesAsync();
+        }
     }
 }

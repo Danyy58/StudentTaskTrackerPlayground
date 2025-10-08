@@ -30,5 +30,13 @@ namespace UserService.Repository
             context.User.Remove(user);
             await context.SaveChangesAsync();
         }
+
+        public async Task RemoveRefreshTokenAsync(int userId)
+        {
+            var user = context.User.Find(userId);
+            user!.RefreshToken = null;
+            user!.RefreshTokenExpiryTime = null;
+            await context.SaveChangesAsync();
+        }
     }
 }

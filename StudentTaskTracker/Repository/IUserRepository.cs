@@ -9,5 +9,6 @@ namespace UserService.Repository
         public Task AddUser(User user);
         public Task<User?> GetUser(Expression<Func<User, bool>> query);
         public Task DeleteUser(User user);
+        public Task RemoveRefreshTokenAsync(int userId);
     }
 }
