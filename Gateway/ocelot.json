@@ -34,7 +34,13 @@
           "Host": "localhost",
           "Port": 7130
         }
-      ]
+      ],
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "Bearer"
+      },
+      "AddHeadersToRequest": {
+        "X-User-Id": "Claims[http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier] > |"
+      }
     },
     {
       "UpstreamPathTemplate": "/delete",
